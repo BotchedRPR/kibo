@@ -18,6 +18,11 @@ CMakeUserPresets.json
 *.obj
 *.elf
 
-# Shared objects (inc. Windows DLLs)
+# Shared objects
 *.so
 *.so.*
+
+# kibo stuff
+.cache/
+kibo
+ldr/
