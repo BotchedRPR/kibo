@@ -32,7 +32,7 @@ static void print_help(void)
 	printf("\t - lock    - set bootmode to PRODUCT_MODE\n\n");
 	printf("WARNING: The following commands may permanently device your device if misused.\n");
 	printf("\t - proxy   - disable RTAS auth for next command\n");
-	printf("\t - diffuse - disable BbryWipeLib functionality\n");
+	printf("\t - defuse - disable BbryWipeLib functionality\n");
 }
 
 static command_t commands[] = {
@@ -40,7 +40,7 @@ static command_t commands[] = {
 	{"unlock",  do_unlock, true},
 	{"lock",    do_lock, true},
 	{"proxy",   do_rtas, true},
-	{"diffuse", do_diffuse, true},
+	{"defuse", do_defuse, true},
 };
 
 static libusb_context* init_context()
