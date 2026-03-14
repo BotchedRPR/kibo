@@ -79,23 +79,30 @@ deviceInfo get_devinfo(libusb_device_handle* dev)
 	}
 
 	val = get_value((char*)responses[2]); // Primary BC
-	if (val) {
+	if (val)
+	{
 		if (strcmp(val, "ACT575") == 0)
 			di.bcVer = ACT575;
 		else if (strcmp(val, "ACQ160") == 0)
 			di.bcVer = ACQ160;
+		else if (strcmp(val, "ACA360") == 0)
+			di.bcVer = ACA360;
 	}
 
 	val = get_value((char*)responses[6]); // Alt BC
-	if (val) {
+	if (val)
+	{
 		if (strcmp(val, "ACT575") == 0)
 			di.bcVer_alt = ACT575;
 		else if (strcmp(val, "ACQ160") == 0)
 			di.bcVer_alt = ACQ160;
+		else if (strcmp(val, "ACA360") == 0)
+			di.bcVer_alt = ACA360;
 	}
 
 	val = get_value((char*)responses[9]); // SecureBoot status
-	if (val) {
+	if (val)
+	{
 		if (strcmp(val, "false") == 0)
 			di.secure = true;
 		else
@@ -103,7 +110,8 @@ deviceInfo get_devinfo(libusb_device_handle* dev)
 	}
 
 	val = get_value((char*)responses[13]); // Model
-	if (val) {
+	if (val)
+	{
 		if (strcmp(val, "bbf100") == 0)
 			di.dev = ATHENA;
 		else if (strcmp(val, "bbe100") == 0)
@@ -115,6 +123,10 @@ deviceInfo get_devinfo(libusb_device_handle* dev)
 
 bool device_supports_kibo(deviceInfo* di)
 {
+	// If we are an ACA prototype, we are exploitable. See: do_devinfo
+	if (di->bcVer == ACA360)
+		return true;
+
 	/*
 	 * We don't need to check device model as it should be
 	 * impossible for luna to boot athena fw and vice-versa
@@ -131,6 +143,7 @@ const char* bootchain_to_string(enum bootchainVersion v)
 	{
 		case ACQ160: return "ACQ160";
 		case ACT575: return "ACT575";
+		case ACA360: return "ACA360";
 		default:     return "INVALID";
 	}
 }
@@ -155,7 +168,11 @@ void do_devinfo(libusb_device_handle* dev)
 	printf("  Backup BC       : %s\n", bootchain_to_string(di.bcVer_alt));
 	printf("  Secure Boot     : %s\n", di.secure ? "true" : "false");
 
-	if (di.bcVer == di.bcVer_alt && di.bcVer != BC_INVALID)
+	/*
+	 * if we are an ACA360 device, don't check alt bootchain, it'll probably be
+	 * acq, but the device won't be able to switch to it as the primary
+	 */
+	if (di.bcVer == ACA360 || (di.bcVer == di.bcVer_alt && di.bcVer != BC_INVALID))
 		printf("  Your device is vulnerable.\n");
 	else
 	{

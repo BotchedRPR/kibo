@@ -12,6 +12,7 @@
 
 enum bootchainVersion {
 	BC_INVALID,
+	ACA360,
 	ACQ160,
 	ACT575,
 };
