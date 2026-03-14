@@ -26,3 +26,4 @@ CMakeUserPresets.json
 .cache/
 /kibo
 ldr/
+build-windows/
